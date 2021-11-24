@@ -15,7 +15,7 @@
 
 > -v /my/custom/xx.cnf:/etc/mysql/my.cnf 
 
-
+---
 
 #### Redis
 
@@ -25,5 +25,5 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 内容为：
 
-requirepass  redis@qwer1234
+> requirepass  redis@qwer1234
 
