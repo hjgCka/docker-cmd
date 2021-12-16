@@ -149,3 +149,56 @@ mongod.conf内容如下，其实是yaml格式：
 >                   - zookeeper
 
 使用docker-compose启动服务，会同时启动zookeeper和kafka。
+
+
+
+## PostgreSQL
+
+重要的环境变量：
+
+- `POSTGRES_PASSWORD`是唯一必填的环境变量，其余都是可选的。用于设置超级用户的密码。
+
+- `POSTGRES_USER`，设置默认超级用户，并创建一个同名的数据库。不设置的话，默认为`postgres`。
+
+- `POSTGRES_DB`，设置默认的数据库，不设置的话使用`POSTGRES_USER`的值。
+
+- `PGDATA`，用于定义一个子目录用于数据库文件的路径，默认值为`/var/lib/postgresql/data`。如果数据卷不能改为`postgres`用户，推荐使用子目录来包含数据
+
+  ```
+  $ docker run -d \
+  	--name some-postgres \
+  	-e POSTGRES_PASSWORD=mysecretpassword \
+  	-e PGDATA=/var/lib/postgresql/data/pgdata \
+  	-v /custom/mount:/var/lib/postgresql/data \
+  	postgres
+  ```
+
+
+
+数据库配置：
+
+可以在`/usr/share/postgresql/postgresql.conf.sample`查看数据库配置例子，或者在启动命令行上使用`-c`选项
+
+```
+docker run -d --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword postgres -c shared_buffers=256MB -c max_connections=200
+```
+
+
+
+数据存储：
+
+自行设置数据路径mount到`/var/lib/postgresql/data`即可
+
+```
+docker run --name some-postgres -v /my/own/datadir:/var/lib/postgresql/data -e POSTGRES_PASSWORD=mysecretpassword -d postgres:tag
+```
+
+
+
+启动命令：
+
+```
+docker run -d --name dev-postgres -e POSTGRES_PASSWORD=123456 -v D:\docker_cmd\image_volumes\postgresql:/var/lib/postgresql/data -p 5080:8080 postgres:11.14-bullseye
+```
+
+> 本机端口为5080
