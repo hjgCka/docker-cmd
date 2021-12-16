@@ -198,7 +198,7 @@ docker run --name some-postgres -v /my/own/datadir:/var/lib/postgresql/data -e P
 启动命令：
 
 ```
-docker run -d --name dev-postgres -e POSTGRES_PASSWORD=123456 -v D:\docker_cmd\image_volumes\postgresql:/var/lib/postgresql/data -p 5080:8080 postgres:11.14-bullseye
+docker run -d --name dev-postgres -e POSTGRES_PASSWORD=123456 -v D:\docker_cmd\image_volumes\postgresql:/var/lib/postgresql/data -p 5080:5432 postgres:11.14-bullseye
 ```
 
 > 本机端口为5080
