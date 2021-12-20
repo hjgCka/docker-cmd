@@ -1,0 +1,90 @@
+使用docker-compose启动命令如下：
+
+```
+version: '2'
+services: 
+  oracle:
+    image: oracleinanutshell/oracle-xe-11g
+    ports:
+      - 1521:1521
+      - 18080:8080
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+      
+  oraclegbk:
+    restart: always
+    image: oracleinanutshell/oracle-xe-11g
+    ports:
+      - 15210:1521
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.GBK
+
+  oracle19c:
+    image: heartu41/oracle19c
+    ports:
+      - 15211:1521
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.GBK
+      
+  mysql:
+    image: mysql:5.7.28
+    restart: always
+    volumes:
+      - "./mysql/db:/var/lib/mysql"
+      - "./mysql/conf/my.cnf:/etc/my.cnf"
+      - "./mysql/conf/mysql/mysql.conf.d/mysqld.cnf:/etc/mysql/mysql.conf.d/mysqld.cnf"
+      - "./mysql/init:/docker-entrypoint-initdb.d/"
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=Passw0rd
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+      
+  redis:
+    hostname: myredis
+    image: redis
+    ports:
+      - 6379:6379
+    restart: always
+    volumes:
+      - "/usr/local/docker/redis/data:/data"
+    command:
+      redis-server --appendonly yes --requirepass redis@qwer1234
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8root@iZ8vbhxafys0ddj9k1ggahZ:/usr/local/docker#
+      
+  postgresql:
+    image: postgres:11.14-bullseye
+    ports:
+      - 5080:5432
+    restart: always
+    volumes:
+      - "/usr/local/docker/postgresql/data:/var/lib/postgresql/data"
+    environment:
+      - POSTGRES_PASSWORD=postgresql@qwer1234
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+  
+  jhipster:
+    image: jhipster/jhipster-registry:v6.3.0
+    ports:
+      - 8761:8761
+    restart: always
+    volumes:
+      - /usr/local/docker/jhipster-registry:/central-config
+    environment:
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m
+      - SPRING_PROFILES_ACTIVE=dev,swagger
+      - SPRING_SECURITY_USER_PASSWORD=admin
+      - JHIPSTER_REGISTRY_PASSWORD=admin
+      - SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_TYPE=native
+      - SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_SEARCH_LOCATIONS=file:./central-config/
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+```
+
