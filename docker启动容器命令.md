@@ -142,6 +142,18 @@ https://hub.docker.com/_/nginx
 
 
 
+## Busybox
+
+使用如下命令启动：
+
+```
+docker run -it --name busybox -d busybox:1.35.0
+```
+
+进入容器后执行相应命令，默认没有`curl`命令。
+
+
+
 ---
 
 
