@@ -111,6 +111,25 @@ mongod.conf内容如下，其实是yaml格式：
 
 
 
+## Nginx
+
+```
+docker run -d --name nginx --restart=always\
+   -v /some/content:/usr/share/nginx/html\
+   -v /host/path/nginx.conf:/etc/nginx/nginx.conf\
+   -v /some/log:/var/log/nginx \
+   -p 80:80  -p 8080:8080 \
+   10.153.61.36/ims/nginx:1.14.2
+```
+
+以上仅为示例，具体的端口、镜像、静态文件、配置文件都需要自行调整。
+
+https://nginx.org/
+
+https://hub.docker.com/_/nginx
+
+
+
 ---
 
 
