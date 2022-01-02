@@ -124,6 +124,18 @@ docker run -d --name nginx --restart=always\
 
 以上仅为示例，具体的端口、镜像、静态文件、配置文件都需要自行调整。
 
+使用镜像默认配置启动为：
+
+```
+docker run -d --name nginx --restart=always \
+  -p 8080:80 \
+   nginx:1.20.2
+```
+
+
+
+参考文档：
+
 https://nginx.org/
 
 https://hub.docker.com/_/nginx
