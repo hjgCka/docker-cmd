@@ -29,7 +29,7 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 > requirepass  redis@qwer1234
 
-
+按照上述的命令，除了需要配置文件之外，还指定了启动命令。
 
 ---
 
