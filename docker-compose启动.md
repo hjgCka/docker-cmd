@@ -1,3 +1,19 @@
+## 构建镜像
+
+docker-compose build [options] [--build-arg key=val...] [SERVICE...]
+
+
+
+## 启动镜像
+
+docker-compose up [options] [--scale SERVICE=NUM...] [SERVICE...]
+
+options一般是-d，即在后台运行服务。[SERVICE...]指定服务名。
+
+
+
+## 示例文件
+
 使用docker-compose启动命令如下：
 
 ```

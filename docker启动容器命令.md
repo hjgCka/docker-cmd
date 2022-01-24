@@ -1,4 +1,4 @@
-#### MySQL
+## MySQL
 
 > docker run --name dev-mysql -p 3308:3306 -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_USER=nacos -e MYSQL_PASSWORD=nacos -v D:\docker_cmd\image_volumes\mysql:/var/lib/mysql -d mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
@@ -15,11 +15,7 @@
 
 
 
----
-
-
-
-#### Redis
+## Redis
 
 > docker run -p 6389:6379 -v D:\docker_cmd\image_volumes\redis\conf:/usr/local/etc/redis  -v D:\docker_cmd\image_volumes\redis\data:/data --name dev-redis -d redis:6.2 redis-server /usr/local/etc/redis/redis.conf
 
@@ -31,11 +27,9 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 按照上述的命令，除了需要配置文件之外，还指定了启动命令。
 
----
 
 
-
-### RabbitMQ
+## RabbitMQ
 
 > ```
 > docker run -d --hostname my-rabbit \
@@ -51,11 +45,7 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 
 
----
-
-
-
-### MongoDB
+## MongoDB
 
 mongodb支持复制集，分片，单点等安装方式。复制集安装时，需要执行配置命令，将某个节点设置为primary。
 
@@ -93,11 +83,7 @@ mongod.conf内容如下，其实是yaml格式：
 
 
 
----
-
-
-
-### Openresty
+## Openresty
 
 > docker run  -d --name openresty  \
 >         -v /xxx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf \
@@ -154,11 +140,7 @@ docker run -it --name busybox -d busybox:1.35.0
 
 
 
----
-
-
-
-### Kafka
+## Kafka
 
 > version: '3'
 >
@@ -245,3 +227,31 @@ docker run -d --name dev-postgres -e POSTGRES_PASSWORD=123456 -v D:\docker_cmd\i
 ```
 
 > 本机端口为5080
+
+
+
+## ElasticSearch
+
+Docker镜像中，es本身的配置、 jvm配置、 日志的配置存在于/usr/share/elasticsearch/config/。
+Elasticsearch loads its configuration from files under /usr/share/elasticsearch/config/。
+
+配置文件名称分别为：elasticsearch.yml和jvm.options，还可以配置log4j2.properties
+
+es的data和log目录存在于${ES_HOME}下的子目录，即/usr/share/elasticsearch/data和/usr/share/elasticsearch/log。
+
+
+
+9200端口对外提供服务、9300端口用于内部节点之间通信。
+
+
+
+在不考虑系统设置等其它设置的情况下，可以如下配置进行启动：
+
+```
+docker run -d --name es -v  full_path/custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
+ -v full_path/jvm.options:/usr/share/elasticsearch/config/jvm.options \
+ -v full_path/log_dir:/usr/share/elasticsearch/log \
+ -v full_path/data_dir:/usr/share/elasticsearch/data \
+ -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch:6.3.2
+```
+
