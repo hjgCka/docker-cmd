@@ -14,7 +14,7 @@ options一般是-d，即在后台运行服务。[SERVICE...]指定服务名。
 
 ## 示例文件
 
-使用docker-compose启动命令如下：
+使用docker-compose时默认docker-compose.yml文件如下：
 
 ```
 version: '2'
@@ -102,5 +102,59 @@ services:
       - SPRING_CLOUD_CONFIG_SERVER_COMPOSITE_0_SEARCH_LOCATIONS=file:./central-config/
       - TZ=Asia/Shanghai
       - LANG=en_US.UTF-8
+```
+
+
+
+## ES启动文件
+
+使用如下docker-compose.yml启动elasticsearch
+
+```yaml
+version: '2'
+services:
+  elasticsearch:
+    container_name: myes
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.3.2
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+    ports:
+      - "59200:9200"
+      - "59300:9300"
+    volumes:
+      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./config/jvm.options:/usr/share/elasticsearch/config/jvm.options
+      - ./log:/usr/share/elasticsearch/log
+      - ./data:/usr/share/elasticsearch/data
+```
+
+需要自己编写elasticsearch.yml和jvm.options文件
+
+elasticsearch.yml样例如下：
+
+```yaml
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+
+# minimum_master_nodes need to be explicitly set when bound on a public IP
+# set to 1 to allow single node clusters
+# Details: https://github.com/elastic/elasticsearch/pull/17288
+discovery.type: single-node
+discovery.zen.minimum_master_nodes: 1
+cluster.routing.allocation.disk.watermark.flood_stage: 99%
+
+xpack.security.enabled: true
+
+xpack.security.authc.realms:
+    realm1:
+        type: native
+        order: 0
+```
+
+jvm.options样例如下：
+
+```
+-Xms512m -Xmx512m
 ```
 
