@@ -158,3 +158,8 @@ jvm.options样例如下：
 -Xms512m -Xmx512m
 ```
 
+
+
+上面的示例中，鉴权使用的是es自带的用户鉴权，也可以于LDAP等其它鉴权方式集成。
+
+启动完成之后执行`bin/x-pack/setup-passwords interactive`，为内置用户设置密码，之后可以使用配置的鉴权方式进行认证，成功后可以进行相应操作。
