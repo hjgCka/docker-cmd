@@ -202,7 +202,15 @@ docker run -it --name busybox -d busybox:1.35.0
 
 数据库配置：
 
-可以在`/usr/share/postgresql/postgresql.conf.sample`查看数据库配置例子，或者在启动命令行上使用`-c`选项
+postgre容器内，有`/usr/share/postgresql/postgresql.conf.sample`文件提供示例，可将其拷贝出来供参考配置。
+
+可以在`/usr/share/postgresql/postgresql.conf.sample`查看数据库配置例子，使用配置文件或者在启动命令行上使用`-c`选项：
+
+```
+docker run -d --name some-postgres -v "$PWD/my-postgres.conf":/etc/postgresql/postgresql.conf -e POSTGRES_PASSWORD=mysecretpassword postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+```
+
+或者：
 
 ```
 docker run -d --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword postgres -c shared_buffers=256MB -c max_connections=200

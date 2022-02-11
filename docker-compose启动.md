@@ -79,8 +79,10 @@ services:
     ports:
       - 5080:5432
     restart: always
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf'
     volumes:
       - "/usr/local/docker/postgresql/data:/var/lib/postgresql/data"
+      - "/usr/loca/docker/postgresql/my-postgres.conf:/etc/postgresql/postgresql.conf"
     environment:
       - POSTGRES_PASSWORD=postgresql@qwer1234
       - TZ=Asia/Shanghai
