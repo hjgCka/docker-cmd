@@ -4,6 +4,14 @@
 
 
 
+需要设置时区加上如下环境变量：
+
+```
+-e TZ=Asia/Shanghai
+```
+
+
+
 使用环境变量MYSQL_ROOT_PASSWORD为root用户设置了密码，并新增了nacos用户且为该用户配置了密码。
 后面的参数设置字符集为utf-8。
 
