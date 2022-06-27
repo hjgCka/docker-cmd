@@ -1,10 +1,37 @@
+## 用户定义的网络
+
+```
+docker network create -d bridge my-net
+```
+
+其它容器在创建时，加上`--network my-net`选项即可实现容器互联。
+
+
+
+## Nacos
+
+nacos需要访问数据库，所以它必须要设置`-network`以通过容器名称访问MySQL：
+
+> ```
+> docker run -d -p 8848:8848 --network my-net --name nacos-2.0.4-server \
+>   -e ARGS="--MYSQL-USER=root --MYSQL-PWD=123456 --MYSQL-HOST=dev-mysql --MYSQL-PORT=3306 --MYSQL-DB=nacos" jeecg-cloud-nacos:3.2.0
+> ```
+
+
+
 ## MySQL
 
-> docker run --name dev-mysql -p 3308:3306 -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_USER=nacos -e MYSQL_PASSWORD=nacos -v D:\docker_cmd\image_volumes\mysql:/var/lib/mysql -d mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+> ```
+> docker run -d --name dev-mysql -p 3308:3306 --network my-net \
+>  -e TZ=Asia/Shanghai -e MYSQL_ROOT_PASSWORD=123456 \
+>  -e MYSQL_USER=nacos -e MYSQL_PASSWORD=nacos \
+>   -v D:\docker_cmd\image_volumes\mysql:/var/lib/mysql \
+>    mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+> ```
 
 
 
-需要设置时区加上如下环境变量：
+设置时区加上如下环境变量：
 
 ```
 -e TZ=Asia/Shanghai
@@ -25,7 +52,12 @@
 
 ## Redis
 
-> docker run -p 6389:6379 -v D:\docker_cmd\image_volumes\redis\conf:/usr/local/etc/redis  -v D:\docker_cmd\image_volumes\redis\data:/data --name dev-redis -d redis:6.2 redis-server /usr/local/etc/redis/redis.conf
+> ```
+> docker run -d --name dev-redis -p 6389:6379 --network my-net \
+>  -v D:\docker_cmd\image_volumes\redis\conf:/usr/local/etc/redis \
+>   -v D:\docker_cmd\image_volumes\redis\data:/data \
+>    redis:6.2 redis-server /usr/local/etc/redis/redis.conf
+> ```
 
 D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配置文件。
 
@@ -40,11 +72,11 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 ## RabbitMQ
 
 > ```
-> docker run -d --hostname my-rabbit \
->  --name rabbit \
->  -p 5672:5672 -p 15672:15672 \
->  -v /data/container_volume/rabbitmq:/var/lib/rabbitmq \
->  rabbitmq:3.8.3-management
+> docker run -d --network my-net --hostname my-rabbit \
+> --name rabbit \
+> -p 5672:5672 -p 15672:15672 \
+> -v /data/container_volume/rabbitmq:/var/lib/rabbitmq \
+> rabbitmq:3.8.3-management
 > ```
 
 
