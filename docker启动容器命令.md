@@ -73,10 +73,10 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 > ```
 > docker run -d --network my-net --hostname my-rabbit \
-> --name rabbit \
+> --name rabbit-server \
 > -p 5672:5672 -p 15672:15672 \
-> -v /data/container_volume/rabbitmq:/var/lib/rabbitmq \
-> rabbitmq:3.8.3-management
+> -v D:\docker_cmd\image_volumes\rabbitmq:/var/lib/rabbitmq \
+>  rabbitmq:3.9.20-management-alpine
 > ```
 
 
