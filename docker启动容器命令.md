@@ -158,6 +158,8 @@ docker run -d --name nginx --restart=always \
    nginx:1.20.2
 ```
 
+> --restart=always本地环境最好不要加上
+
 
 
 参考文档：
