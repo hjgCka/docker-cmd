@@ -305,3 +305,53 @@ docker run -d --name es -v  full_path/custom_elasticsearch.yml:/usr/share/elasti
  -p 9200:9200 docker.elastic.co/elasticsearch/elasticsearch:6.3.2
 ```
 
+
+
+## Gitlab-ce
+
+官方镜像地址：https://hub.docker.com/r/gitlab/gitlab-ce/tags
+
+官方安装文档：https://docs.gitlab.com/ee/install/docker.html
+
+解决头像无法显示问题：
+
+https://blog.csdn.net/xingdiango/article/details/117390196
+
+https://blog.csdn.net/redsoft_mymuch/article/details/115654869
+
+
+
+docker安装使用如下命令，IP配置的是公司的`纵横贝尔5G`分配的地址，固定下来了：
+
+```
+sudo docker run --detach \
+  --env TZ=Asia/Shanghai \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://192.168.2.163:8765/'; gitlab_rails['gitlab_shell_ssh_port'] = 2345" \
+  --publish 8765:8765 --publish 2345:22 \
+  --name gitlab \
+  --volume D:\docker_cmd\image_volumes\gitlab\config:/etc/gitlab \
+  --volume D:\docker_cmd\image_volumes\gitlab\logs:/var/log/gitlab \
+  --volume D:\docker_cmd\image_volumes\gitlab\data:/var/opt/gitlab \
+  --shm-size 256m \
+  gitlab/gitlab-ce:15.1.1-ce.0
+```
+
+> docker容器的--hostname选项，在docker-compose多个容器安装时比较有用，可用hostname互相访问。
+
+安装会持续一段时间，使用如下命令查看日志：
+
+```
+docker logs -f gitlab
+```
+
+访问时使用root，密码通过一下命令获取：
+
+```
+docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
+```
+
+这个密码文件会在首次再配置24小时内删除。
+
+> umqnZfEyXVwdnLo7/KTWc1hUv0KpliPaPJqSLxi0+J0=
+
+修改为: gitroot#$Hcc886
