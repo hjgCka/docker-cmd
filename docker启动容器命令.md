@@ -319,6 +319,8 @@ https://blog.csdn.net/xingdiango/article/details/117390196
 
 https://blog.csdn.net/redsoft_mymuch/article/details/115654869
 
+这个配置放在启动命令中，防止重写启动之后，配置丢失。
+
 
 
 docker安装使用如下命令，IP配置的是公司的`纵横贝尔5G`分配的地址，固定下来了：
@@ -326,7 +328,7 @@ docker安装使用如下命令，IP配置的是公司的`纵横贝尔5G`分配�
 ```
 sudo docker run --detach \
   --env TZ=Asia/Shanghai \
-  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://192.168.2.163:8765/'; gitlab_rails['gitlab_shell_ssh_port'] = 2345" \
+  --env GITLAB_OMNIBUS_CONFIG="external_url 'http://192.168.2.163:8765/'; gitlab_rails['gitlab_shell_ssh_port'] = 2345;gitlab_rails['gravatar_plain_url']='http://sdn.geekzu.org/avatar/%{hash}?s=%{size}&d=identicon'" \
   --publish 8765:8765 --publish 2345:22 \
   --name gitlab \
   --volume D:\docker_cmd\image_volumes\gitlab\config:/etc/gitlab \
