@@ -326,7 +326,7 @@ https://blog.csdn.net/redsoft_mymuch/article/details/115654869
 docker安装使用如下命令，IP配置的是公司的`纵横贝尔5G`分配的地址，固定下来了：
 
 ```
-sudo docker run --detach \
+sudo docker run --detach \ -m 2048M
   --env TZ=Asia/Shanghai \
   --env GITLAB_OMNIBUS_CONFIG="external_url 'http://192.168.2.163:8765/'; gitlab_rails['gitlab_shell_ssh_port'] = 2345;gitlab_rails['gravatar_plain_url']='http://sdn.geekzu.org/avatar/%{hash}?s=%{size}&d=identicon'" \
   --publish 8765:8765 --publish 2345:22 \
@@ -357,3 +357,15 @@ docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 > umqnZfEyXVwdnLo7/KTWc1hUv0KpliPaPJqSLxi0+J0=
 
 修改为: gitroot#$Hcc886
+
+
+
+### 优化gitlab
+
+https://blog.csdn.net/qq_29235677/article/details/121348475
+
+https://www.cnblogs.com/54chensongxia/p/15120778.html
+
+[Docker安装gitlab](https://blog.csdn.net/qq_39934154/article/details/121846029)
+
+可以参照上面的配置，puma取代了unicorn
