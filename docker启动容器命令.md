@@ -13,8 +13,8 @@ docker network create -d bridge my-net
 nacos容器可通过环境变量进行配置，如果有需要也可通过自定义文件配置，将名为`custom.properties`的文件，挂载到`/home/nacos/init.d/`即可，它的优先级高于`application.properties`。这样看，也可以挂载`application.properties`文件。
 
 ```shell
-docker run --name nacos2_0_4 -e MODE=standalone \
-  -e MYSQL_SERVICE_HOST=10.168.55.88 -e MYSQL_SERVICE_PORT=3306 \
+docker run --name nacos2_0_4 -e MODE=standalone -e SPRING_DATASOURCE_PLATFORM=mysql \
+  -e MYSQL_DATABASE_NUM=1 -e MYSQL_SERVICE_HOST=10.168.55.88 -e MYSQL_SERVICE_PORT=3306 \
   -e MYSQL_SERVICE_DB_NAME=yxfs_nacos -e MYSQL_SERVICE_USER=root -e MYSQL_SERVICE_PASSWORD=123456 \
   -p 8848:8848 -d nacos/nacos-server:v2.0.4
 ```
