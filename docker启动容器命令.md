@@ -16,7 +16,7 @@ nacos容器可通过环境变量进行配置，如果有需要也可通过自定
 docker run --name nacos2_0_4 -e MODE=standalone \
   -e MYSQL_SERVICE_HOST=10.168.55.88 -e MYSQL_SERVICE_PORT=3306 \
   -e MYSQL_SERVICE_DB_NAME=yxfs_nacos -e MYSQL_SERVICE_USER=root -e MYSQL_SERVICE_PASSWORD=123456 \
-  -p 8848:8848 s-d nacos/nacos-server:2.0.4
+  -p 8848:8848 -d nacos/nacos-server:v2.0.4
 ```
 
 
