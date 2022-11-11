@@ -1,6 +1,6 @@
 ## 用户定义的网络
 
-```
+```shell
 docker network create -d bridge my-net
 ```
 
@@ -10,30 +10,33 @@ docker network create -d bridge my-net
 
 ## Nacos
 
-nacos需要访问数据库，所以它必须要设置`-network`以通过容器名称访问MySQL：
+nacos容器可通过环境变量进行配置，如果有需要也可通过自定义文件配置，将名为`custom.properties`的文件，挂载到`/home/nacos/init.d/`即可，它的优先级高于`application.properties`。这样看，也可以挂载`application.properties`文件。
 
-> ```
-> docker run -d -p 8848:8848 --network my-net --name nacos-2.0.4-server \
->   -e ARGS="--MYSQL-USER=root --MYSQL-PWD=123456 --MYSQL-HOST=dev-mysql --MYSQL-PORT=3306 --MYSQL-DB=nacos" jeecg-cloud-nacos:3.2.0
-> ```
+```shell
+docker run --name nacos2_0_4 -e MODE=standalone \
+  -e MYSQL_SERVICE_HOST=10.168.55.88 -e MYSQL_SERVICE_PORT=3306 \
+  -e MYSQL_SERVICE_DB_NAME=yxfs_nacos -e MYSQL_SERVICE_USER=root -e MYSQL_SERVICE_PASSWORD=123456 \
+  -p 8848:8848 s-d nacos/nacos-server:2.0.4
+```
 
 
 
 ## MySQL
 
-> ```
-> docker run -d --name dev-mysql -p 3308:3306 --network my-net \
->  -e TZ=Asia/Shanghai -e MYSQL_ROOT_PASSWORD=123456 \
->  -e MYSQL_USER=nacos -e MYSQL_PASSWORD=nacos \
->   -v D:\docker_cmd\image_volumes\mysql:/var/lib/mysql \
->    mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-> ```
+```shell
+docker run -d --name dev-mysql -p 3308:3306 --network my-net \
+ -e TZ=Asia/Shanghai -e MYSQL_ROOT_PASSWORD=123456 \
+ -e MYSQL_USER=nacos -e MYSQL_PASSWORD=nacos \
+ -v D:\docker_cmd\image_volumes\mysql:/var/lib/mysql \
+ mysql:8.0.27 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci \
+ --lower_case_table_names=1
+```
 
 
 
 设置时区加上如下环境变量：
 
-```
+```shell
 -e TZ=Asia/Shanghai
 ```
 
@@ -44,26 +47,32 @@ nacos需要访问数据库，所以它必须要设置`-network`以通过容器�
 
 
 
+**一般会加上`lower_case_table_names = 1`参数，该参数不要放在配置文件，不会生效。在windows环境运行的容器与linux容器，产生的数据文件可能并不通用，最好用客户端导出sql文件。**
+
+
+
 ### 自定义配置文件
 
 如果需要使用自定义配置文件，加上如下命令：
 
 > -v /my/custom/xx.cnf:/etc/mysql/my.cnf 
 
-不同版本有配置文件路径不同，5.7版本的配置文件在`/etc/my.cnf`。
+最好从镜像中，将配置文件复制下来。
 
 配置文件分为`[mysqld]`和`[client]`这2段，分别表示服务器配置和客户端配置。可以先不使用配置启动容器，然后将容器内的对应文件复制出来再修改。
 
 
 
-## Redis
+## Rediss
 
-> ```
-> docker run -d --name dev-redis -p 6389:6379 --network my-net \
->  -v D:\docker_cmd\image_volumes\redis\conf:/usr/local/etc/redis \
->   -v D:\docker_cmd\image_volumes\redis\data:/data \
->    redis:6.2 redis-server /usr/local/etc/redis/redis.conf
-> ```
+```shell
+docker run -d --name dev-redis -p 6389:6379 --network my-net \
+ -v D:\docker_cmd\image_volumes\redis\conf:/usr/local/etc/redis \
+ -v D:\docker_cmd\image_volumes\redis\data:/data \
+ redis:6.2 redis-server /usr/local/etc/redis/redis.conf
+```
+
+
 
 D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配置文件。
 
@@ -77,13 +86,13 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 ## RabbitMQ
 
-> ```
-> docker run -d --network my-net --hostname my-rabbit \
-> --name rabbit-server \
-> -p 5672:5672 -p 15672:15672 \
-> -v D:\docker_cmd\image_volumes\rabbitmq:/var/lib/rabbitmq \
->  rabbitmq:3.9.20-management-alpine
-> ```
+```shell
+docker run -d --network my-net --hostname my-rabbit \
+ --name rabbit-server \
+ -p 5672:5672 -p 15672:15672 \
+ -v D:\docker_cmd\image_volumes\rabbitmq:/var/lib/rabbitmq \
+ rabbitmq:3.9.20-management-alpine
+```
 
 
 
@@ -95,14 +104,16 @@ D:\docker_cmd\image_volumes\redis\conf目录下需要存放一个redis.conf配�
 
 mongodb支持复制集，分片，单点等安装方式。复制集安装时，需要执行配置命令，将某个节点设置为primary。
 
-> ```
-> docker run --name mongodb-rs -d \
->    -p 27017:27017 \
->    -v /xxx/mongod.conf:/etc/mongo/mongod.conf \
->    -v /xxx/mongo:/data/db \
->     -d  mongo:4.2.1 \
->     --config /etc/mongo/mongod.conf
-> ```
+```shell
+docker run --name mongodb-rs -d \
+-p 27017:27017 \
+-v /xxx/mongod.conf:/etc/mongo/mongod.conf \
+-v /xxx/mongo:/data/db \
+ -d  mongo:4.2.1 \
+ --config /etc/mongo/mongod.conf
+```
+
+
 
 mongod.conf内容如下，其实是yaml格式：
 
@@ -131,13 +142,17 @@ mongod.conf内容如下，其实是yaml格式：
 
 ## Openresty
 
-> docker run  -d --name openresty  \
->         -v /xxx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf \
-> 	      -v  /xxx/logs:/usr/local/openresty/nginx/logs/ \
-> 	         -v /xxx/lua_scripts:/usr/local/openresty/nginx/luascripts \
->                 -e TZ=Asia/Shanghai \
->                -p 8088:8088   \
->       openresty/openresty:1.19.3.1-centos
+```shell
+docker run  -d --name openresty  \
+     -v /xxx/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf \
+	      -v  /xxx/logs:/usr/local/openresty/nginx/logs/ \
+	         -v /xxx/lua_scripts:/usr/local/openresty/nginx/luascripts \
+             -e TZ=Asia/Shanghai \
+            -p 8088:8088   \
+   openresty/openresty:1.19.3.1-centos
+```
+
+
 
 /xxx/lua_scripts目录下面放upload.lua文件。
 
@@ -145,7 +160,7 @@ mongod.conf内容如下，其实是yaml格式：
 
 ## Nginx
 
-```
+```shell
 docker run -d --name nginx --restart=always\
    -v /some/content:/usr/share/nginx/html\
    -v /host/path/nginx.conf:/etc/nginx/nginx.conf\
@@ -154,17 +169,17 @@ docker run -d --name nginx --restart=always\
    10.153.61.36/ims/nginx:1.14.2
 ```
 
+
+
 以上仅为示例，具体的端口、镜像、静态文件、配置文件都需要自行调整。
 
 使用镜像默认配置启动为：
 
-```
+```shell
 docker run -d --name nginx --restart=always \
   -p 8080:80 \
    nginx:1.20.2
 ```
-
-> --restart=always本地环境最好不要加上
 
 
 
@@ -190,36 +205,39 @@ docker run -it --name busybox -d busybox:1.35.0
 
 ## Kafka
 
-> version: '3'
->
-> services:
->   zookeeper:
->     image: zookeeper:3.6.2
->     ports:
->       - 2181:2181
->     environment:
->       ZOO_MY_ID: 1
->       ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
->     volumes:
->       - ./zk_data:/data
->
->   kafka:
->     image: wurstmeister/kafka:2.13-2.6.0
->     ports:
->       - 9093:9092
->         environment:
->             KAFKA_BROKER_ID: 0
->             KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
->             KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.168.55.88:9093
->             #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
->             #KAFKA_INTER_BROKER_LISTENER_NAME: OUTSIDE
->             KAFKA_MESSAGE_MAX_BYTES: 2000000
->             KAFKA_CREATE_TOPICS: "test_topic:1:1"
->             KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
->         volumes:
->             - ./kafka_logs:/kafka
->             depends_on:
->                   - zookeeper
+```yaml
+version: '3'
+
+services:
+zookeeper:
+ image: zookeeper:3.6.2
+ ports:
+      - 2181:2181
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=zookeeper:2888:3888;2181
+    volumes:
+      - ./zk_data:/data
+
+  kafka:
+    image: wurstmeister/kafka:2.13-2.6.0
+    ports:
+
+   - 9093:9092
+     environment:
+         KAFKA_BROKER_ID: 0
+         KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+         KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://10.168.55.88:9093
+         #KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+         #KAFKA_INTER_BROKER_LISTENER_NAME: OUTSIDE
+         KAFKA_MESSAGE_MAX_BYTES: 2000000
+         KAFKA_CREATE_TOPICS: "test_topic:1:1"
+         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+     volumes:
+        - ./kafka_logs:/kafka
+          depends_on:
+          - zookeeper
+```
 
 使用docker-compose启动服务，会同时启动zookeeper和kafka。
 
@@ -237,7 +255,7 @@ docker run -it --name busybox -d busybox:1.35.0
 
 - `PGDATA`，用于定义一个子目录用于数据库文件的路径，默认值为`/var/lib/postgresql/data`。如果数据卷不能改为`postgres`用户，推荐使用子目录来包含数据
 
-  ```
+  ```shell
   $ docker run -d \
   	--name some-postgres \
   	-e POSTGRES_PASSWORD=mysecretpassword \
@@ -254,13 +272,13 @@ postgre容器内，有`/usr/share/postgresql/postgresql.conf.sample`文件提供
 
 可以在`/usr/share/postgresql/postgresql.conf.sample`查看数据库配置例子，使用配置文件或者在启动命令行上使用`-c`选项：
 
-```
+```shell
 docker run -d --name some-postgres -v "$PWD/my-postgres.conf":/etc/postgresql/postgresql.conf -e POSTGRES_PASSWORD=mysecretpassword postgres -c 'config_file=/etc/postgresql/postgresql.conf'
 ```
 
 或者：
 
-```
+```shell
 docker run -d --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword postgres -c shared_buffers=256MB -c max_connections=200
 ```
 
@@ -270,7 +288,7 @@ docker run -d --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword postgre
 
 自行设置数据路径mount到`/var/lib/postgresql/data`即可
 
-```
+```shell
 docker run --name some-postgres -v /my/own/datadir:/var/lib/postgresql/data -e POSTGRES_PASSWORD=mysecretpassword -d postgres:tag
 ```
 
@@ -278,7 +296,7 @@ docker run --name some-postgres -v /my/own/datadir:/var/lib/postgresql/data -e P
 
 启动命令：
 
-```
+```shell
 docker run -d --name dev-postgres -e POSTGRES_PASSWORD=123456 -v D:\docker_cmd\image_volumes\postgresql:/var/lib/postgresql/data -p 5080:5432 postgres:11.14-bullseye
 ```
 
@@ -303,7 +321,7 @@ es的data和log目录存在于${ES_HOME}下的子目录，即/usr/share/elastics
 
 在不考虑系统设置等其它设置的情况下，可以如下配置进行启动：
 
-```
+```shell
 docker run -d --name es -v  full_path/custom_elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
  -v full_path/jvm.options:/usr/share/elasticsearch/config/jvm.options \
  -v full_path/log_dir:/usr/share/elasticsearch/log \
@@ -331,7 +349,7 @@ https://blog.csdn.net/redsoft_mymuch/article/details/115654869
 
 docker安装使用如下命令，IP配置的是公司的`纵横贝尔5G`分配的地址，固定下来了：
 
-```
+```shell
 sudo docker run --detach \ -m 2048M
   --env TZ=Asia/Shanghai \
   --env GITLAB_OMNIBUS_CONFIG="external_url 'http://192.168.2.163:8765/'; gitlab_rails['gitlab_shell_ssh_port'] = 2345;gitlab_rails['gravatar_plain_url']='http://sdn.geekzu.org/avatar/%{hash}?s=%{size}&d=identicon'" \
@@ -348,13 +366,13 @@ sudo docker run --detach \ -m 2048M
 
 安装会持续一段时间，使用如下命令查看日志：
 
-```
+```shell
 docker logs -f gitlab
 ```
 
 访问时使用root，密码通过一下命令获取：
 
-```
+```shell
 docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
 ```
 
